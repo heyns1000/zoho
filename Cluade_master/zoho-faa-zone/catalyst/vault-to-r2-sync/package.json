@@ -1,0 +1,22 @@
+{
+  "name": "vault-to-r2-sync",
+  "version": "1.0.0",
+  "description": "HSOMNI9000 Vault to R2 sync function",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "zoho",
+    "catalyst",
+    "cloudflare",
+    "r2",
+    "hsomni9000"
+  ],
+  "author": "Heyns Schoeman",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.450.0",
+    "zcatalyst-sdk-node": "^2.0.0"
+  }
+}
