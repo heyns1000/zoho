@@ -1,0 +1,189 @@
+{
+  "application_name": "HSOMNI9000_Index",
+  "form_name": "Files",
+  "description": "Searchable index of all files across all platforms",
+  "fields": [
+    {
+      "name": "File_ID",
+      "type": "Auto_Number",
+      "prefix": "FILE",
+      "digits": 10,
+      "primary_key": true
+    },
+    {
+      "name": "File_Name",
+      "type": "Single_Line",
+      "max_length": 500,
+      "required": true,
+      "searchable": true
+    },
+    {
+      "name": "File_Hash",
+      "type": "Single_Line",
+      "max_length": 64,
+      "description": "SHA-256 hash for deduplication",
+      "unique": true,
+      "indexed": true
+    },
+    {
+      "name": "File_Size",
+      "type": "Number",
+      "decimal_places": 0,
+      "description": "Size in bytes"
+    },
+    {
+      "name": "File_Type",
+      "type": "Single_Line",
+      "max_length": 100,
+      "description": "MIME type"
+    },
+    {
+      "name": "Source",
+      "type": "Dropdown",
+      "options": [
+        "google-drive",
+        "github",
+        "onedrive",
+        "icloud",
+        "local-mac",
+        "alibaba-oss",
+        "vercel",
+        "replit",
+        "manual-upload"
+      ],
+      "required": true,
+      "indexed": true
+    },
+    {
+      "name": "Source_ID",
+      "type": "Single_Line",
+      "max_length": 200,
+      "description": "ID in source system"
+    },
+    {
+      "name": "Brand_ID",
+      "type": "Lookup",
+      "lookup_form": "Brands",
+      "lookup_field": "Brand_ID",
+      "indexed": true
+    },
+    {
+      "name": "R2_Path",
+      "type": "Single_Line",
+      "max_length": 1000,
+      "required": true,
+      "description": "Path in Cloudflare R2"
+    },
+    {
+      "name": "R2_URL",
+      "type": "URL",
+      "description": "Public URL (if available)"
+    },
+    {
+      "name": "Upload_Date",
+      "type": "Date_Time",
+      "default": "now",
+      "indexed": true
+    },
+    {
+      "name": "Last_Modified",
+      "type": "Date_Time"
+    },
+    {
+      "name": "Has_Secrets",
+      "type": "Checkbox",
+      "default": false,
+      "description": "Contains API keys/secrets"
+    },
+    {
+      "name": "Secrets_Count",
+      "type": "Number",
+      "decimal_places": 0
+    },
+    {
+      "name": "Processing_Status",
+      "type": "Dropdown",
+      "options": [
+        "pending",
+        "processing",
+        "completed",
+        "failed",
+        "skipped-duplicate"
+      ],
+      "default": "pending"
+    },
+    {
+      "name": "Metadata",
+      "type": "Multi_Line",
+      "description": "JSON metadata"
+    },
+    {
+      "name": "Tags",
+      "type": "Multi_Select",
+      "options": [
+        "important",
+        "archived",
+        "verified",
+        "encrypted",
+        "public",
+        "private",
+        "confidential"
+      ]
+    },
+    {
+      "name": "OCR_Text",
+      "type": "Multi_Line",
+      "description": "Extracted text for search",
+      "searchable": true
+    }
+  ],
+  "indexes": [
+    {
+      "name": "idx_hash",
+      "fields": ["File_Hash"],
+      "unique": true
+    },
+    {
+      "name": "idx_source",
+      "fields": ["Source", "Source_ID"]
+    },
+    {
+      "name": "idx_brand",
+      "fields": ["Brand_ID", "Upload_Date"]
+    },
+    {
+      "name": "idx_search",
+      "fields": ["File_Name", "File_Type", "Tags"],
+      "type": "fulltext"
+    }
+  ],
+  "reports": [
+    {
+      "name": "All Files",
+      "type": "list",
+      "columns": ["File_ID", "File_Name", "Source", "Brand_ID", "File_Size", "Upload_Date"],
+      "sort": ["Upload_Date DESC"]
+    },
+    {
+      "name": "Files with Secrets",
+      "type": "list",
+      "criteria": "Has_Secrets == true",
+      "columns": ["File_ID", "File_Name", "Secrets_Count", "Upload_Date"]
+    },
+    {
+      "name": "Duplicates Prevented",
+      "type": "list",
+      "criteria": "Processing_Status == \"skipped-duplicate\"",
+      "columns": ["File_Name", "File_Hash", "Upload_Date"]
+    },
+    {
+      "name": "Storage by Brand",
+      "type": "summary",
+      "group_by": "Brand_ID",
+      "aggregate": [
+        {"field": "File_Size", "function": "sum"},
+        {"field": "File_ID", "function": "count"}
+      ]
+    }
+  ]
+}

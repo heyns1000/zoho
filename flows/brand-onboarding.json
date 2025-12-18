@@ -1,0 +1,115 @@
+{
+  "name": "Brand Onboarding Automation",
+  "description": "Automates setup when a new brand is added to the system",
+  "trigger": {
+    "app": "Zoho Creator",
+    "form": "Brands",
+    "event": "New Record"
+  },
+  "actions": [
+    {
+      "step": 1,
+      "name": "Create R2 Folder Structure",
+      "app": "Zoho Catalyst",
+      "action": "Execute Function",
+      "function": "create-brand-folders",
+      "input": {
+        "brand_id": "${trigger.Brand_ID}",
+        "brand_name": "${trigger.Brand_Name}",
+        "folders": [
+          "assets",
+          "documents",
+          "media",
+          "backups",
+          "archives"
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "name": "Configure DNS",
+      "app": "Cloudflare",
+      "action": "Add DNS Record",
+      "input": {
+        "type": "MX",
+        "name": "${trigger.Domain}",
+        "content": "mx.zoho.com",
+        "priority": 10
+      },
+      "condition": "${trigger.Setup_Email} == true"
+    },
+    {
+      "step": 3,
+      "name": "Add Zoho Mail Domain",
+      "app": "Zoho Mail",
+      "action": "Add Domain",
+      "input": {
+        "domain": "${trigger.Domain}",
+        "organization": "HSOMNI9000"
+      },
+      "condition": "${trigger.Setup_Email} == true"
+    },
+    {
+      "step": 4,
+      "name": "Create Email Account",
+      "app": "Zoho Mail",
+      "action": "Create Account",
+      "input": {
+        "domain": "${trigger.Domain}",
+        "email": "info@${trigger.Domain}",
+        "name": "${trigger.Brand_Name}"
+      },
+      "condition": "${trigger.Setup_Email} == true"
+    },
+    {
+      "step": 5,
+      "name": "Setup Vault Chamber",
+      "app": "Zoho Vault",
+      "action": "Create Chamber",
+      "input": {
+        "chamber_name": "${trigger.Brand_Name}",
+        "description": "Credentials for ${trigger.Brand_Name}",
+        "owner": "${trigger.Owner_Email}"
+      }
+    },
+    {
+      "step": 6,
+      "name": "Create Analytics Workspace",
+      "app": "Zoho Analytics",
+      "action": "Create Workspace",
+      "input": {
+        "workspace_name": "${trigger.Brand_Name}_Analytics",
+        "description": "Analytics for ${trigger.Brand_Name}"
+      }
+    },
+    {
+      "step": 7,
+      "name": "Send Welcome Email",
+      "app": "Zoho Mail",
+      "action": "Send Email",
+      "input": {
+        "from": "admin@hsomni9000.com",
+        "to": "${trigger.Owner_Email}",
+        "subject": "Welcome to HSOMNI9000 - ${trigger.Brand_Name}",
+        "body": "Your brand has been successfully onboarded!\n\nDomain: ${trigger.Domain}\nEmail: info@${trigger.Domain}\nR2 Path: /brands/${trigger.Brand_ID}\nVault Chamber: ${trigger.Brand_Name}\n\nNext steps:\n1. Upload brand assets\n2. Configure email forwarding\n3. Set up analytics dashboard"
+      }
+    },
+    {
+      "step": 8,
+      "name": "Update Status",
+      "app": "Zoho Creator",
+      "action": "Update Record",
+      "input": {
+        "application": "HSOMNI9000_Index",
+        "form": "Brands",
+        "record_id": "${trigger.ID}",
+        "data": {
+          "Onboarding_Status": "Complete",
+          "Onboarding_Date": "${now}",
+          "R2_Path": "/brands/${trigger.Brand_ID}",
+          "Vault_Chamber_ID": "${step5.chamber_id}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "name": "GitHub Repository Backup",
+  "description": "Backs up GitHub repositories to Cloudflare R2",
+  "trigger": {
+    "app": "GitHub",
+    "event": "Push",
+    "repositories": "all",
+    "webhook": true
+  },
+  "actions": [
+    {
+      "step": 1,
+      "name": "Get Repository Details",
+      "app": "GitHub",
+      "action": "Get Repository",
+      "input": {
+        "repo": "${trigger.repository}"
+      }
+    },
+    {
+      "step": 2,
+      "name": "Clone Repository",
+      "app": "Zoho Catalyst",
+      "action": "Execute Function",
+      "function": "github-clone",
+      "input": {
+        "repo_url": "${step1.clone_url}",
+        "branch": "${trigger.branch}",
+        "commit": "${trigger.after}"
+      }
+    },
+    {
+      "step": 3,
+      "name": "Create Archive",
+      "app": "Zoho Catalyst",
+      "action": "Execute Function",
+      "function": "create-archive",
+      "input": {
+        "source_path": "${step2.clone_path}",
+        "archive_name": "${step1.name}_${trigger.after}.tar.gz"
+      }
+    },
+    {
+      "step": 4,
+      "name": "Upload to R2",
+      "app": "Zoho Catalyst",
+      "action": "Execute Function",
+      "function": "vault-to-r2-sync",
+      "input": {
+        "file_data": "${step3.archive}",
+        "file_name": "${step3.archive_name}",
+        "source": "github",
+        "source_id": "${step1.id}",
+        "r2_path": "/github/${step1.owner}/${step1.name}/${trigger.after}.tar.gz"
+      }
+    },
+    {
+      "step": 5,
+      "name": "Update Index",
+      "app": "Zoho Creator",
+      "action": "Create Record",
+      "input": {
+        "application": "HSOMNI9000_Index",
+        "form": "GitHub_Backups",
+        "data": {
+          "Repository": "${step1.full_name}",
+          "Branch": "${trigger.branch}",
+          "Commit": "${trigger.after}",
+          "Commit_Message": "${trigger.head_commit.message}",
+          "Archive_Size": "${step3.size}",
+          "R2_Path": "${step4.r2_path}",
+          "Backup_Date": "${now}"
+        }
+      }
+    },
+    {
+      "step": 6,
+      "name": "Notify Success",
+      "app": "Zoho Cliq",
+      "action": "Post to Channel",
+      "input": {
+        "channel": "github-backups",
+        "message": "✅ Backed up: ${step1.full_name} @ ${trigger.after}\n💬 ${trigger.head_commit.message}"
+      }
+    }
+  ]
+}
