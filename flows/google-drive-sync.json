@@ -1,0 +1,108 @@
+{
+  "name": "Google Drive to R2 Sync",
+  "description": "Automatically syncs new/modified files from Google Drive to Cloudflare R2",
+  "trigger": {
+    "app": "Google Drive",
+    "event": "New or Modified File",
+    "folder": "All Folders",
+    "interval": "15 minutes"
+  },
+  "actions": [
+    {
+      "step": 1,
+      "name": "Get File Details",
+      "app": "Google Drive",
+      "action": "Get File by ID",
+      "input": {
+        "file_id": "${trigger.file_id}"
+      }
+    },
+    {
+      "step": 2,
+      "name": "Download File",
+      "app": "Google Drive",
+      "action": "Download File",
+      "input": {
+        "file_id": "${trigger.file_id}"
+      }
+    },
+    {
+      "step": 3,
+      "name": "Check for Duplicates",
+      "app": "Zoho Creator",
+      "action": "Search Records",
+      "input": {
+        "application": "HSOMNI9000_Index",
+        "form": "Files",
+        "criteria": "File_Hash == \"${step2.sha256}\""
+      }
+    },
+    {
+      "step": 4,
+      "name": "Process File",
+      "app": "Zoho Catalyst",
+      "action": "Execute Function",
+      "function": "vault-to-r2-sync",
+      "input": {
+        "file_data": "${step2.content}",
+        "file_name": "${step1.name}",
+        "file_size": "${step1.size}",
+        "source": "google-drive",
+        "source_id": "${trigger.file_id}",
+        "brand_id": "${step1.folder_path}",
+        "skip_if_duplicate": true
+      },
+      "condition": "${step3.record_count} == 0"
+    },
+    {
+      "step": 5,
+      "name": "Create Index Record",
+      "app": "Zoho Creator",
+      "action": "Create Record",
+      "input": {
+        "application": "HSOMNI9000_Index",
+        "form": "Files",
+        "data": {
+          "File_Name": "${step1.name}",
+          "File_Hash": "${step4.sha256}",
+          "File_Size": "${step1.size}",
+          "Source": "google-drive",
+          "Source_ID": "${trigger.file_id}",
+          "R2_Path": "${step4.r2_path}",
+          "R2_URL": "${step4.r2_url}",
+          "Brand_ID": "${step4.brand_id}",
+          "Upload_Date": "${now}",
+          "Has_Secrets": "${step4.secrets_found}"
+        }
+      },
+      "condition": "${step4.success} == true"
+    },
+    {
+      "step": 6,
+      "name": "Send Notification",
+      "app": "Zoho Cliq",
+      "action": "Post to Channel",
+      "input": {
+        "channel": "sync-notifications",
+        "message": "✅ File synced: ${step1.name} (${step1.size} bytes) from Google Drive to R2"
+      },
+      "condition": "${step5.success} == true"
+    },
+    {
+      "step": 7,
+      "name": "Error Notification",
+      "app": "Zoho Cliq",
+      "action": "Post to Channel",
+      "input": {
+        "channel": "sync-errors",
+        "message": "❌ Sync failed for: ${step1.name}\nError: ${step4.error_message}"
+      },
+      "condition": "${step4.success} == false"
+    }
+  ],
+  "error_handling": {
+    "on_error": "continue",
+    "retry_count": 3,
+    "retry_interval": "5 minutes"
+  }
+}

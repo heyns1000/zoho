@@ -1,0 +1,38 @@
+{
+  "name": "silent-node-orbit",
+  "version": "1.0.0",
+  "description": "Background sync daemon connecting HotStack with HSOMNI9000",
+  "main": "silent-node-orbit.js",
+  "bin": {
+    "scroll-search": "./scrollbinder.js",
+    "silent-orbit": "./silent-node-orbit.js"
+  },
+  "scripts": {
+    "start": "node silent-node-orbit.js",
+    "search": "node scrollbinder.js",
+    "install-daemon": "node install-daemon.js"
+  },
+  "keywords": [
+    "hotstack",
+    "hsomni9000",
+    "sync",
+    "search",
+    "cloudflare",
+    "zoho"
+  ],
+  "author": "Heyns Schoeman | Fruitful Global Planet",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.450.0",
+    "axios": "^1.6.2",
+    "chalk": "^4.1.2",
+    "chokidar": "^3.5.3"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heyns1000/zoho.git"
+  }
+}

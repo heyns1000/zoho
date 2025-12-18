@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Credentials
+*.env
+credentials.env
+.env.local
+.env.production
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build files
+dist/
+build/
+*.zip
+
+# Backups
+*.bak
+*~
+
+# Zoho-specific
+catalyst_config.json
+.catalyst/
+
+# Sensitive data
+github-backup/
+*_export.json

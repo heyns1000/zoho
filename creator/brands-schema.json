@@ -1,0 +1,149 @@
+{
+  "application_name": "HSOMNI9000_Index",
+  "form_name": "Brands",
+  "description": "Master registry of all 9,000 brands",
+  "fields": [
+    {
+      "name": "Brand_ID",
+      "type": "Auto_Number",
+      "prefix": "BRD",
+      "digits": 6,
+      "primary_key": true
+    },
+    {
+      "name": "Brand_Name",
+      "type": "Single_Line",
+      "max_length": 200,
+      "required": true,
+      "unique": true,
+      "searchable": true
+    },
+    {
+      "name": "Domain",
+      "type": "Email",
+      "required": true,
+      "unique": true,
+      "description": "Primary domain for this brand"
+    },
+    {
+      "name": "Owner_Email",
+      "type": "Email",
+      "required": true
+    },
+    {
+      "name": "Setup_Email",
+      "type": "Checkbox",
+      "default": true,
+      "description": "Automatically setup email"
+    },
+    {
+      "name": "Industry",
+      "type": "Dropdown",
+      "options": [
+        "Technology",
+        "E-commerce",
+        "Finance",
+        "Healthcare",
+        "Education",
+        "Media",
+        "Retail",
+        "Services",
+        "Manufacturing",
+        "Other"
+      ]
+    },
+    {
+      "name": "Country",
+      "type": "Single_Line",
+      "max_length": 100
+    },
+    {
+      "name": "Status",
+      "type": "Dropdown",
+      "options": [
+        "active",
+        "inactive",
+        "onboarding",
+        "archived"
+      ],
+      "default": "onboarding",
+      "indexed": true
+    },
+    {
+      "name": "Onboarding_Status",
+      "type": "Dropdown",
+      "options": [
+        "pending",
+        "in_progress",
+        "complete"
+      ],
+      "default": "pending"
+    },
+    {
+      "name": "Onboarding_Date",
+      "type": "Date_Time"
+    },
+    {
+      "name": "Created_Date",
+      "type": "Date_Time",
+      "default": "now"
+    },
+    {
+      "name": "R2_Path",
+      "type": "Single_Line",
+      "max_length": 500,
+      "description": "Base path in R2"
+    },
+    {
+      "name": "Vault_Chamber_ID",
+      "type": "Single_Line",
+      "max_length": 100,
+      "description": "Zoho Vault chamber ID"
+    },
+    {
+      "name": "Total_Files",
+      "type": "Number",
+      "decimal_places": 0,
+      "description": "Count of files"
+    },
+    {
+      "name": "Total_Storage_GB",
+      "type": "Decimal",
+      "decimal_places": 2,
+      "description": "Storage used in GB"
+    },
+    {
+      "name": "Last_Sync",
+      "type": "Date_Time",
+      "description": "Last sync timestamp"
+    },
+    {
+      "name": "Notes",
+      "type": "Multi_Line"
+    }
+  ],
+  "reports": [
+    {
+      "name": "All Active Brands",
+      "type": "list",
+      "criteria": "Status == \"active\"",
+      "columns": ["Brand_ID", "Brand_Name", "Domain", "Industry", "Total_Files", "Total_Storage_GB"],
+      "sort": ["Brand_Name ASC"]
+    },
+    {
+      "name": "Onboarding Queue",
+      "type": "list",
+      "criteria": "Onboarding_Status != \"complete\"",
+      "columns": ["Brand_Name", "Domain", "Onboarding_Status", "Created_Date"]
+    },
+    {
+      "name": "Storage by Industry",
+      "type": "summary",
+      "group_by": "Industry",
+      "aggregate": [
+        {"field": "Total_Storage_GB", "function": "sum"},
+        {"field": "Brand_ID", "function": "count"}
+      ]
+    }
+  ]
+}
