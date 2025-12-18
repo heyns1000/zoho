@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 ScrollBinder • Universal Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --accent: #14b8a6;
+            --dark: #0f172a;
+            --dark-200: #1e293b;
+            --dark-300: #334155;
+            --light: #f1f5f9;
+            --text: #e2e8f0;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Search */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .hero-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-dim);
+            margin-bottom: 3rem;
+        }
+
+        /* Search Bar */
+        .search-wrapper {
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.5rem 5rem 1.5rem 4rem;
+            font-size: 1.1rem;
+            background: var(--dark-200);
+            border: 2px solid var(--dark-300);
+            border-radius: 60px;
+            color: var(--text);
+            font-family: inherit;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1),
+                        0 20px 50px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--text-dim);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Filter Pills */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .filter-pill {
+            padding: 0.6rem 1.5rem;
+            background: var(--dark-200);
+            border: 1px solid var(--dark-300);
+            border-radius: 50px;
+            color: var(--text);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .filter-pill:hover {
+            background: var(--dark-300);
+            border-color: var(--primary);
+        }
+
+        .filter-pill.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* Results */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .results-count {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+        }
+
+        .results-count strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            background: var(--dark-200);
+            border: 1px solid var(--dark-300);
+            border-radius: 8px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Result Card */
+        .result-card {
+            background: var(--dark-200);
+            border: 1px solid var(--dark-300);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .result-card:hover {
+            border-color: var(--primary);
+            transform: translateX(8px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+
+        .result-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .result-icon.mac { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .result-icon.google { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .result-icon.r2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .result-icon.github { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .result-icon.hotstack { background: linear-gradient(135deg, #fa709a, #fee140); }
+
+        .result-content {
+            flex: 1;
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--text);
+        }
+
+        .result-path {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .result-badge {
+            padding: 0.3rem 0.8rem;
+            background: var(--dark-300);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success { background: rgba(20, 184, 166, 0.2); color: var(--accent); }
+        .badge-warning { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+
+        /* Source Stats */
+        .source-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: var(--dark-200);
+            border: 1px solid var(--dark-300);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-count {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            border: 4px solid var(--dark-300);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-text {
+            color: var(--text-dim);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .search-input {
+                padding: 1.2rem 1.5rem;
+            }
+
+            .search-icon {
+                display: none;
+            }
+
+            .search-btn {
+                position: static;
+                width: 100%;
+                margin-top: 1rem;
+                transform: none;
+            }
+
+            .source-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero -->
+        <div class="hero">
+            <div class="hero-icon">🔍</div>
+            <h1 class="hero-title">ScrollBinder</h1>
+            <p class="hero-subtitle">Search everything, everywhere, all at once</p>
+
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Search across Mac, Google Drive, R2, GitHub, HotStack..."
+                    id="search"
+                    autofocus
+                >
+                <button class="search-btn" onclick="performSearch()">Search</button>
+            </div>
+
+            <div class="filters">
+                <div class="filter-pill active" onclick="toggleFilter(this, 'all')">✨ All Sources</div>
+                <div class="filter-pill" onclick="toggleFilter(this, 'mac')">💻 Mac</div>
+                <div class="filter-pill" onclick="toggleFilter(this, 'google')">📁 Google Drive</div>
+                <div class="filter-pill" onclick="toggleFilter(this, 'r2')">🌐 R2</div>
+                <div class="filter-pill" onclick="toggleFilter(this, 'github')">🐙 GitHub</div>
+                <div class="filter-pill" onclick="toggleFilter(this, 'hotstack')">🔥 HotStack</div>
+            </div>
+        </div>
+
+        <!-- Source Stats -->
+        <div class="source-stats" id="source-stats" style="display: none;">
+            <div class="stat-box">
+                <div class="stat-icon">💻</div>
+                <div class="stat-count" id="count-mac">0</div>
+                <div class="stat-label">Mac Local</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">📁</div>
+                <div class="stat-count" id="count-google">0</div>
+                <div class="stat-label">Google Drive</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">🌐</div>
+                <div class="stat-count" id="count-r2">0</div>
+                <div class="stat-label">Cloudflare R2</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">🐙</div>
+                <div class="stat-count" id="count-github">0</div>
+                <div class="stat-label">GitHub</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-count" id="count-hotstack">0</div>
+                <div class="stat-label">HotStack</div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="results-container"></div>
+    </div>
+
+    <script>
+        let currentFilter = 'all';
+
+        function toggleFilter(el, filter) {
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            currentFilter = filter;
+            if (document.getElementById('search').value) {
+                performSearch();
+            }
+        }
+
+        document.getElementById('search').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        async function performSearch() {
+            const query = document.getElementById('search').value;
+            if (!query) return;
+
+            const container = document.getElementById('results-container');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching across all sources...</p></div>';
+
+            document.getElementById('source-stats').style.display = 'grid';
+
+            // Simulate search
+            setTimeout(() => {
+                displayResults(query);
+            }, 1500);
+        }
+
+        function displayResults(query) {
+            const mockResults = generateMockResults(query);
+            const container = document.getElementById('results-container');
+
+            if (mockResults.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <div class="empty-title">No results found</div>
+                        <div class="empty-text">Try different keywords or check your sources</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const filteredResults = currentFilter === 'all'
+                ? mockResults
+                : mockResults.filter(r => r.source === currentFilter);
+
+            container.innerHTML = `
+                <div class="results-header">
+                    <div class="results-count">Found <strong>${filteredResults.length}</strong> results for "<strong>${query}</strong>"</div>
+                </div>
+                ${filteredResults.map(result => createResultCard(result)).join('')}
+            `;
+
+            updateSourceStats(mockResults);
+        }
+
+        function createResultCard(result) {
+            const iconMap = {
+                mac: '💻',
+                google: '📁',
+                r2: '🌐',
+                github: '🐙',
+                hotstack: '🔥'
+            };
+
+            return `
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-icon ${result.source}">${iconMap[result.source]}</div>
+                        <div class="result-content">
+                            <div class="result-title">${result.name}</div>
+                            <div class="result-path">${result.path}</div>
+                            <div class="result-meta">
+                                <div class="meta-item">📅 ${result.date}</div>
+                                ${result.size ? `<div class="meta-item">📦 ${result.size}</div>` : ''}
+                                <div class="result-badge ${result.synced ? 'badge-success' : 'badge-warning'}">
+                                    ${result.synced ? '✓ Synced' : '⏳ Pending'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateSourceStats(results) {
+            const counts = results.reduce((acc, r) => {
+                acc[r.source] = (acc[r.source] || 0) + 1;
+                return acc;
+            }, {});
+
+            Object.keys(counts).forEach(source => {
+                const el = document.getElementById(`count-${source}`);
+                if (el) el.textContent = counts[source];
+            });
+        }
+
+        function generateMockResults(query) {
+            return [
+                { name: `${query}_report.pdf`, path: '/Users/heyns/Documents/Reports/', source: 'mac', date: '2025-01-15', size: '2.4 MB', synced: true },
+                { name: `${query}_final.xlsx`, path: 'google-drive:Business/2025/', source: 'google', date: '2025-01-14', size: '1.2 MB', synced: true },
+                { name: `${query}_backup.zip`, path: 'r2:hsomni9000-vault/backups/', source: 'r2', date: '2025-01-13', size: '15.8 MB', synced: true },
+                { name: `${query}.html`, path: 'github.com/heyns1000/project/', source: 'github', date: '2025-01-12', synced: true },
+                { name: `${query}_upload.pdf`, path: 'r2:hsomni9000-vault/hotstack/2025-01-15/', source: 'hotstack', date: '2025-01-15', size: '856 KB', synced: true },
+                { name: `${query}_draft.docx`, path: 'google-drive:Shared/Drafts/', source: 'google', date: '2025-01-11', size: '450 KB', synced: false },
+                { name: `${query}_presentation.key`, path: '/Users/heyns/Desktop/', source: 'mac', date: '2025-01-10', size: '8.2 MB', synced: true },
+                { name: `${query}_data.json`, path: 'r2:hsomni9000-vault/data/', source: 'r2', date: '2025-01-09', size: '1.1 MB', synced: true }
+            ];
+        }
+    </script>
+</body>
+</html>
