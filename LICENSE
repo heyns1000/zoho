@@ -1,0 +1,82 @@
+FRUITFUL PROPRIETARY SOURCE LICENSE (FPSL) v1.0
+Copyright (c) 2024-2026 Fruitful Holdings (Pty) Ltd & Heyns Schoeman
+All rights reserved.
+
+This software, configuration, documentation, and all associated files
+(collectively, "the Work") are the exclusive intellectual property of
+Fruitful Holdings (Pty) Ltd, registered in the Republic of South Africa,
+operating under the faa.zone, seedwave.faa.zone, and related domain
+infrastructure ("the Fruitful Ecosystem").
+
+------------------------------------------------------------------------
+NOTICE: BY CLONING, FORKING, DOWNLOADING, READING, EXECUTING, DEPLOYING,
+OR OTHERWISE INTERACTING WITH ANY PART OF THIS REPOSITORY - INCLUDING BUT
+NOT LIMITED TO TEMPLATES, CONFIGS, WORKERS, WORKFLOWS, SCRIPTS, OR DOCS -
+YOU ACCEPT THE FULL TERMS OF THIS LICENSE WITH IMMEDIATE EFFECT.
+NO FURTHER AGREEMENT IS REQUIRED. IGNORANCE OF THESE TERMS IS NOT A DEFENCE.
+------------------------------------------------------------------------
+
+1. GRANT OF RIGHTS
+   No rights are granted by default. Use of the Work in any form requires
+   prior written authorisation from Fruitful Holdings (Pty) Ltd.
+   Authorised use is limited to:
+   a) Internal evaluation by the named licensee;
+   b) Contribution back to this repository under Fruitful Holdings review;
+   c) Deployment within the Fruitful Ecosystem (*.faa.zone, *.seedwave.faa.zone)
+      by authorised operators only.
+
+2. RESTRICTIONS
+   You may NOT, without explicit written permission:
+   a) Redistribute, sublicense, sell, rent, or transfer the Work;
+   b) Use the Work or any derivative in a competing product or service;
+   c) Remove or alter this license, any copyright notice, or the
+      fruitful-banner.png attribution present in any repository under
+      the {brand}-faa-zone naming convention;
+   d) Deploy worker, DNS, or routing configurations derived from this
+      Work outside the Fruitful Ecosystem;
+   e) Use the seedwave domain structure, the {brand}.seedwave.faa.zone
+      subnode convention, or the loadBrandConfig pattern commercially
+      without a separate commercial licence.
+
+3. BANNER & ATTRIBUTION REQUIREMENT
+   All repositories and deployments operating under the Fruitful Ecosystem
+   must include the fruitful-banner.png asset at the root of the repository
+   and reference it in the top-level README.md. Removal of the banner from
+   any public-facing interface or repo constitutes a material breach.
+
+4. NO WARRANTY
+   THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, SECURITY, OR NON-INFRINGEMENT.
+
+5. LIMITATION OF LIABILITY - EFFECTIVE FROM FIRST USE
+   TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW:
+   a) FRUITFUL HOLDINGS (PTY) LTD AND ITS CONTRIBUTORS SHALL NOT BE LIABLE
+      FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR
+      PUNITIVE DAMAGES ARISING FROM USE OR INABILITY TO USE THE WORK;
+   b) THIS INCLUDES, WITHOUT LIMITATION, LOSS OF DATA, REVENUE, PROFIT,
+      BUSINESS OPPORTUNITY, OR DOMAIN/DNS MISCONFIGURATION;
+   c) ANY MODIFICATION, FORK, OR DERIVATIVE WORK IS ENTIRELY THE
+      RESPONSIBILITY OF THE PARTY MAKING THE CHANGE. FRUITFUL HOLDINGS
+      ACCEPTS NO RESPONSIBILITY FOR CHANGES MADE BY THIRD PARTIES,
+      CONTRIBUTORS, OR AUTOMATED SYSTEMS;
+   d) THIS LIMITATION APPLIES WHETHER OR NOT FRUITFUL HOLDINGS HAS BEEN
+      ADVISED OF THE POSSIBILITY OF SUCH DAMAGE, AND TAKES EFFECT FROM
+      THE MOMENT YOU FIRST INTERACT WITH THE WORK IN ANY FORM.
+
+6. GOVERNING LAW
+   This licence is governed by the laws of the Republic of South Africa.
+   Any disputes shall be resolved in the courts of Gauteng, South Africa.
+
+7. CONTACT
+   For licensing enquiries: vault@faa.zone
+   Fruitful Holdings (Pty) Ltd - Willow Acres Estate, Gauteng, ZA
+   https://faa.zone
+
+------------------------------------------------------------------------
+This license applies to all repositories under:
+  github.com/Fruitful-Global-Planet/*
+  github.com/heyns1000/*
+operating within the Fruitful Ecosystem including but not limited to:
+  banimal-global-loop, zoho, codenest, vaultmesh, seedwave
+------------------------------------------------------------------------
